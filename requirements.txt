@@ -1,0 +1,11 @@
+requests
+sqlalchemy
+pandas
+numpy
+scikit-learn
+tensorflow
+gspread
+oauth2client
+apache-airflow
+pyspark
+psycopg2

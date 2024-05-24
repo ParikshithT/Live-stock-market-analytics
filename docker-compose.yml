@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: stock_market_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+
+  # airflow:
+  #   image: puckel/docker-airflow:latest
+  #   environment:
+  #     LOAD_EX: "n"
+  #     EXECUTOR: "LocalExecutor"
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - ./dags:/usr/local/airflow/dags
+  #     - ./scripts:/usr/local/airflow/scripts
+  #   depends_on:
+  #     - postgres
+
+  spark:
+    image: jupyter/pyspark-notebook  # Example Spark image
+    volumes:
+      - ./jdbc_drivers:/app/jdbc_drivers/postgresql-42.7.3.jar  
+      - ./scripts:/app/scripts
+    depends_on:
+      - postgres
+
+  app:
+    build: .
+    volumes:
+      - ./scripts:/app/scripts
+      - ./config.json:/app/config.json
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
